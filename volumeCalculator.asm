@@ -61,7 +61,6 @@ ConvertToDec Proc
         div ebx
         push dx
         inc Counter
-        mov eax, 0
         cmp eax, 0
         je EndDivideLoop
         jmp DivideLoop
@@ -74,7 +73,6 @@ GetCubicInches Proc
         pop dx
         dec Counter
         call PutUDec
-        mov Counter, 0
         cmp Counter, 0
         je EndPrintLoop
         jmp PrintLoop
