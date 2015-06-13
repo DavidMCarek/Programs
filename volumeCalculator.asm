@@ -11,6 +11,7 @@
     ExtendedTemp DD 0h 
     DivisionCarry DB 0h
     Counter DB 0h
+    Printer DW 0h
 .Code
     extern PutUDec : NEAR , GetDec : NEAR
 VolumeCalculator Proc
@@ -46,38 +47,32 @@ VolumeCalculator Proc
         div ebx
         mov DivisionCarry, dl   ; carry will never be more than 10
         mov eax, ecx
-        call ConvertToDec       ; convert the back half of the number to dec 
+    ; convert the back half of the number to dec
+    DivideLoop1:
+        div ebx
+        push dx
+        inc Counter
+        cmp eax, 0h
+        jg DivideLoop1
+        
         mov eax, ExtendedTemp
-        call ConvertToDec
-        call GetCubicInches
+
+    DivideLoop2:
+        div ebx
+        push dx
+        inc Counter
+        cmp eax, 0h
+        jg DivideLoop2
+    
+    PrintLoop1:
+        pop dx
+        dec Counter
+        cmp Counter, 0h
+        jg PrintLoop1
         
 
         mov ax, 4c00h
         int 21h
 VolumeCalculator EndP
-
-ConvertToDec Proc
-    DivideLoop:
-        div ebx
-        push dx
-        inc Counter
-        cmp eax, 0
-        je EndDivideLoop
-        jmp DivideLoop
-    EndDivideLoop:
-        ret
-ConvertToDec EndP
-
-GetCubicInches Proc
-    PrintLoop:
-        pop dx
-        dec Counter
-        call PutUDec
-        cmp Counter, 0
-        je EndPrintLoop
-        jmp PrintLoop
-    EndPrintLoop:
-        ret
-GetCubicInches EndP
 
     End VolumeCalculator
