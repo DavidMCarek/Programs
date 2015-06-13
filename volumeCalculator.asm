@@ -9,7 +9,6 @@
     CubicInches DB 'Cubic inches', '$'
     CubicInchesHex DQ 0h 
     ExtendedTemp DD 0h 
-    DivisionCarry DB 0h
     Counter DB 0h
     Printer DW 0h
 .Code
@@ -45,7 +44,6 @@ VolumeCalculator Proc
         mov ExtendedTemp, eax
         xor edx, edx    ; clear edx
         div ebx
-        mov DivisionCarry, dl   ; carry will never be more than 10
         mov eax, ecx
     ; convert the back half of the number to dec
     DivideLoop1:
