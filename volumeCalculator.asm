@@ -65,8 +65,9 @@ VolumeCalculator Proc
         jg DivideLoop2
     
     PrintLoop1:
-        pop dx
+        pop ax
         dec Counter
+        call PutUDec
         cmp Counter, 0h
         jg PrintLoop1
         
