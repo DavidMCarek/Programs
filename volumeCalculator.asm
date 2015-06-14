@@ -7,12 +7,12 @@
     ResultMessage DB 'The volume is ', '$' 
     CubicFeet DB ' Cubic feet and ', '$'
     CubicInches DB ' Cubic inches', '$'
-    FrontHalfOfInput DD 0h
-    BackHalfOfInput DD 0h
-    FrontHalfOfCuFt DD 0h
-    BackHalfOfCuFt DD 0h
+    FrontHalfOfReg DD 0h
+    BackHalfOfReg DD 0h
+    FrontTemp DD 0h
+    BackTemp DD 0h
     RemainingCuIn Dw 0h
-    Counter DB 0h
+    StackCounter DB 0h
 .Code
     extern PutUDec : NEAR , GetDec : NEAR
 VolumeCalculator Proc
@@ -40,55 +40,49 @@ VolumeCalculator Proc
         shl ebx, 16
         mov bx, ax
         pop ax
-        cwde 
-
         mul ebx      
         ;result in edx:eax
         
+        mov FrontHalfOfReg, edx
+        mov FrontTemp, edx
+        mov BackHalfOfReg, eax
+        mov BackTemp, eax
+
         mov ebx, 0ah
-        mov ecx, eax 
-        ; this will hold the lower half of the number for now
-        
-        mov BackHalfOfInput, ecx
-        mov eax, edx    
-        ; move upper half into eax
-
-        mov FrontHalfOfInput, eax
         xor edx, edx
-        ; clear edx
 
+    ConvertInchesToDec:
+        mov eax, FrontTemp
         div ebx
-        mov eax, ecx
-    
-    ConvertBackHalfToDec:
+        mov FrontTemp, eax
+
+        mov eax, BackTemp
         div ebx
+        mov BackTemp, eax
         push dx
         xor edx, edx
-        inc Counter
-        cmp eax, 0h
-        jg ConvertBackHalfToDec
-        
-        mov eax, FrontHalfOfInput
+        inc StackCounter
 
-    ConvertFrontHalfToDec:
-        div ebx
-        push dx
-        xor edx, edx
-        inc Counter
-        cmp eax, 0h
-        jg ConvertFrontHalfToDec
-    
+        cmp FrontTemp, 0h
+        jne ConvertInchesToDec
+        cmp BackTemp, 0h
+        jne ConvertInchesToDec
+        
+
+
         mov dx, offset ResultMessage
         mov ah, 09h
         int 21h
 
     PrintLoopInches:
         pop ax
-        dec Counter
+        dec StackCounter
         call PutUDec
-        cmp Counter, 0h
-        jg PrintLoopInches
+        cmp StackCounter, 0h
+        jne PrintLoopInches
         
+
+
         mov dx, offset CubicInches
         mov ah, 09h
         int 21h
@@ -97,50 +91,51 @@ VolumeCalculator Proc
         mov ah, 09h
         int 21h
 
-        mov eax, FrontHalfOfInput
+        mov eax, FrontHalfOfReg
         xor edx, edx
         mov ebx, 1728
         div ebx
-        mov FrontHalfOfCuFt, eax
+        mov FrontTemp, eax
 
-        mov eax, BackHalfOfInput
+        mov eax, BackHalfOfReg
         div ebx
-        mov BackHalfOfCuFt, eax
+        mov BackTemp, eax
         mov RemainingCuIn, dx
 
-        mov eax, FrontHalfOfCuft
+
         mov ebx, 0ah
         xor edx, edx
+    ConvertCuFtToDec:
+        mov eax, FrontTemp
         div ebx
+        mov FrontTemp, eax
 
-        mov eax, BackHalfOfCuFt
-    ConvertBackCuFtToDec:
+        mov eax, BackTemp
         div ebx
+        mov BackTemp, eax
         push dx
-        inc Counter
+        inc StackCounter
         xor edx, edx
-        cmp eax, 0h
-        jg ConvertBackCuFtToDec
 
-        mov eax, FrontHalfOfCuFt
-    ConvertFrontCuFtToDec:
-        div ebx
-        push dx
-        inc Counter
-        xor edx, edx
-        cmp eax, 0h
-        jg ConvertFrontCuFtToDec
+        cmp FrontTemp, 0h
+        jne ConvertCuFtToDec
+        cmp BackTemp, 0h
+        jne ConvertCuFtToDec
+
+
 
         mov dx, offset ResultMessage
         mov ah, 09h
         int 21h
 
-    PrintLoopFt:
+    PrintLoopFeet:
         pop ax
-        dec Counter
+        dec StackCounter
         Call PutUDec
-        cmp Counter, 0h
-        jg PrintLoopFt
+        cmp StackCounter, 0h
+        jne PrintLoopFeet
+
+
 
         mov dx, offset CubicFeet
         mov ah, 09h
@@ -151,17 +146,17 @@ VolumeCalculator Proc
     ConvertRemainingCuInToDec:
         div bx    
         push dx
-        inc Counter
+        inc StackCounter
         xor dx, dx
         cmp ax, 0h
-        jg ConvertRemainingCuInToDec
+        jne ConvertRemainingCuInToDec
 
     PrintRemainingCuIn:
         pop ax
-        dec Counter
+        dec StackCounter
         Call PutUDec
-        cmp Counter, 0h
-        jg PrintRemainingCuIn
+        cmp StackCounter, 0h
+        jne PrintRemainingCuIn
 
         mov dx, offset CubicInches
         mov ah, 09h
