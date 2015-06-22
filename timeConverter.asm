@@ -10,6 +10,7 @@
     MinMsg DB ' Minutes ', '$'
     HourMsg DB ' Hours ', '$'
     SecondsTemp DB 0h
+    InvalidInputMsg DB 'Please enter a valid input' , '$'
     
 .Code
     extern GetDec : near, PutDDec : near
@@ -132,6 +133,7 @@ GetInputs:
     mov dx, offset NewLine
     int 21h
 
+RunAgainPrompt:
     mov dx, offset RunAgain
     int 21h
 
@@ -147,6 +149,20 @@ GetInputs:
     je GetInputs
     cmp bl, 'Y'
     je GetInputs
+    cmp bl, 'n'
+    je NoRepeat
+    cmp bl, 'N'
+    je NoRepeat
+
+    mov dx, offset InvalidInputMsg
+    int 21h
+    mov dx, offset NewLine
+    int 21h
+
+    jmp RunAgainPrompt
+
+
+NoRepeat:
 
     mov ah, 4ch
     int 21h
