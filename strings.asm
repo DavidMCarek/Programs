@@ -32,7 +32,8 @@ Include PCMAC.Inc
 
 SelectNewFunction:
 
-    call SelectFunction
+    _PutStr SelectFMsg
+    _GetCh
 
     cmp al, 'e'
     je ExitProgram
@@ -47,20 +48,6 @@ ExitProgram:
     mov ah, 4ch
     int 21h
     Main EndP 
-
-    ; this proc leaves selected function in al and clears ah
-    SelectFunction Proc
-    push dx
-    mov ah, 09h
-    _PutStr SelectFMsg
-
-    mov ah, 01h
-    int 21h
-
-    xor ah, ah
-    pop dx
-    ret
-    SelectFunction EndP 
 
     RunFunction Proc
     pushf
