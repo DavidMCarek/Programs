@@ -16,7 +16,7 @@ Include PCMAC.Inc
     F1Msg   DB '1) Find the location of a characters first occurence', 0dh, 0ah, '$'
     F2Msg   DB '2) Find the number of occurences of a character', 0dh, 0ah, '$'
     F3Msg   DB '3) Find the length of the string', 0dh, 0ah, '$'
-    F4Msg   DB '4) Find the number of alpha numeric characters',0dh, 0ah, '$'
+    F4Msg   DB '4) Find the number of alphanumeric characters',0dh, 0ah, '$'
     F5Msg   DB '5) Replace every occurence of a letter with a different one', 0dh, 0ah, '$'
     F6Msg   DB '6) Capitalize all letters in the string', 0dh, 0ah, '$'
     F7Msg   DB '7) Lowercase all letter in the string', 0dh, 0ah, '$'
@@ -24,6 +24,7 @@ Include PCMAC.Inc
     F9Msg   DB '9) Input a new String', 0dh, 0ah, '$'
     UndoMsg DB 'U) Undo the last function (only works once)', 0dh, 0ah, '$'
     ExitMsg DB 'E) Exit', 0dh, 0ah, '$'
+    NmbrOfCharsMsg  DB 'Number of alphanumeric characters > ', '$' 
     FindCharMsg     DB 'Please enter a character to search for > ', '$'
     NoCharMatch     DB 'The character selected could not be found ', 0dh, 0ah, '$'
     CharFoundAt     DB 'Character location (0 indexed) > ', '$'
@@ -243,6 +244,51 @@ ExitProgram:
     Function3 EndP
 
     Function4 Proc
+
+    _PutStr NmbrOfCharsMsg
+
+    mov cx, 0
+    mov bx, offset CurrentString
+    dec bx
+
+    CheckNextChar:
+    inc bx
+    cmp byte ptr [bx], '$'
+    je DoneCountingChars
+
+    cmp byte ptr [bx], '0'
+    jb Not0_9
+    cmp byte ptr [bx], '9'
+    ja Not0_9
+    inc cx
+    jmp CheckNextChar
+
+    Not0_9:
+
+    cmp byte ptr [bx], 'A'
+    jb NotCapA_Z
+    cmp byte ptr [bx], 'Z'
+    ja NotCapA_Z
+    inc cx
+    jmp CheckNextChar
+
+    NotCapA_Z:
+
+    cmp byte ptr [bx], 'a'
+    jb NotLowA_Z
+    cmp byte ptr [bx], 'z'
+    ja NotLowA_Z
+    inc cx
+
+    NotLowA_Z:
+
+    jmp CheckNextChar
+
+    DoneCountingChars:
+
+    mov ax, cx
+    call PutDec
+    _PutStr NewLine
 
     ret
     Function4 EndP
