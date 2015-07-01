@@ -273,16 +273,17 @@ ExitProgram:
 
     xor cx, cx
     mov cl, StringLength
+    mov bx, offset CurrentString
 
     ClearNextByte:
     cmp cx, 0
     je Cleared
-    mov bx, offset CurrentString
     mov byte ptr [bx], '$'
     dec cx
     jmp ClearNextByte
 
     Cleared:
+    _PutStr NewLine
     _PutStr GetNewInputMsg
     _GetStr Buffer
     _PutStr NewLine
