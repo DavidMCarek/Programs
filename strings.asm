@@ -5,8 +5,9 @@ Include PCMAC.Inc
 .Data
     NewLine         DB 0dh, 0ah, '$'
     MaxStrLength    equ 51
+
     Buffer          DB MaxStrLength
-                    DB ?
+    StringLength    DB ?
     CurrentString   DB 51 dup('$')
 
     CurrentStringMsg    DB 'The current string > ', '$'
@@ -24,9 +25,10 @@ Include PCMAC.Inc
     UndoMsg DB 'U) Undo the last function (only works once)', 0dh, 0ah, '$'
     ExitMsg DB 'E) Exit', 0dh, 0ah, '$'
     FindCharMsg     DB 'Please enter a character to search for > ', '$'
-    NoCharMatch     DB 'The character select could not be found ', 0dh, 0ah, '$'
-    CharFoundAt     DB '(0 indexed) The character was found at location ', '$'
+    NoCharMatch     DB 'The character selected could not be found ', 0dh, 0ah, '$'
+    CharFoundAt     DB 'Character location (0 indexed) > ', '$'
     CharOccurences  DB 'Character occurences > ', '$'
+    LengthMsg       DB 'String length > ', '$'
     InvalidInputMsg DB 'The input entered was not a valid function', 0dh, 0ah, '$'
 
 .Code
@@ -229,9 +231,14 @@ ExitProgram:
     ret
     Function2 EndP
 
-
     Function3 Proc
-
+    
+    _PutStr LengthMsg
+    xor ah, ah
+    mov al, StringLength
+    call PutDec
+    _PutStr NewLine
+    
     ret
     Function3 EndP
 
@@ -264,6 +271,18 @@ ExitProgram:
 
     Function9 Proc
 
+    xor cx, cx
+    mov cl, StringLength
+
+    ClearNextByte:
+    cmp cx, 0
+    je Cleared
+    mov bx, offset CurrentString
+    mov byte ptr [bx], '$'
+    dec cx
+    jmp ClearNextByte
+
+    Cleared:
     _PutStr GetNewInputMsg
     _GetStr Buffer
     _PutStr NewLine
