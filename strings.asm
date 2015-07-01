@@ -279,11 +279,11 @@ ExitProgram:
     cmp cx, 0
     je Cleared
     mov byte ptr [bx], '$'
+    inc bx
     dec cx
     jmp ClearNextByte
 
     Cleared:
-    _PutStr NewLine
     _PutStr GetNewInputMsg
     _GetStr Buffer
     _PutStr NewLine
