@@ -13,7 +13,6 @@ Include PCMAC.Inc
     GetNewInputMsg  DB 'Please enter a new string of characters > ', '$'
     SelectFMsg      DB 'Please enter a number 1-9 to select a function or 0 to list the functions', 0dh, 0ah, '$'
     F1Msg   DB '1) Find the location of a characters first occurence', 0dh, 0ah, '$'
-    F1InputMsg  DB 'Please enter a character to search for > ', '$'
     F2Msg   DB '2) Find the number of occurences of a character', 0dh, 0ah, '$'
     F3Msg   DB '3) Find the length of the string', 0dh, 0ah, '$'
     F4Msg   DB '4) Find the number of alpha numeric characters',0dh, 0ah, '$'
@@ -24,8 +23,10 @@ Include PCMAC.Inc
     F9Msg   DB '9) Input a new String', 0dh, 0ah, '$'
     UndoMsg DB 'U) Undo the last function (only works once)', 0dh, 0ah, '$'
     ExitMsg DB 'E) Exit', 0dh, 0ah, '$'
+    FindCharMsg     DB 'Please enter a character to search for > ', '$'
     NoCharMatch     DB 'The character select could not be found ', 0dh, 0ah, '$'
     CharFoundAt     DB '(0 indexed) The character was found at location ', '$'
+    CharOccurences  DB 'Character occurences > ', '$'
     InvalidInputMsg DB 'The input entered was not a valid function', 0dh, 0ah, '$'
 
 .Code
@@ -167,16 +168,16 @@ ExitProgram:
 
     Function1 Proc
 
-    _PutStr F1InputMsg
+    _PutStr FindCharMsg 
     _GetCh
-    xor ah, ah
-    push ax
+    mov bl, al
     _PutStr NewLine
-    pop ax
+    mov al, bl
 
     mov bx, offset CurrentString
     mov cx, -1
     dec bx
+
     CheckMatchForChar:
     inc cx
     inc bx
@@ -199,6 +200,31 @@ ExitProgram:
     Function1 EndP
 
     Function2 Proc
+
+    _PutStr FindCharMsg
+    _GetCh
+    mov bl, al
+    _PutStr NewLine
+    mov al, bl
+    
+    mov cx, 0
+    mov bx, offset CurrentString
+    dec bx
+
+    CheckChar:
+    inc bx
+    cmp byte ptr [bx], '$'
+    je DoneCounting
+    cmp byte ptr [bx], al
+    jne CheckChar
+    inc cx
+    jmp CheckChar
+
+    DoneCounting:
+    _PutStr CharOccurences
+    mov ax, cx
+    call putDec 
+    _PutStr NewLine
 
     ret
     Function2 EndP
