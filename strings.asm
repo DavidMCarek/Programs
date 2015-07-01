@@ -13,6 +13,7 @@ Include PCMAC.Inc
     GetNewInputMsg  DB 'Please enter a new string of characters > ', '$'
     SelectFMsg      DB 'Please enter a number 1-9 to select a function or 0 to list the functions', 0dh, 0ah, '$'
     F1Msg   DB '1) Find the location of a characters first occurence', 0dh, 0ah, '$'
+    F1InputMsg  DB 'Please enter a character to search for > ', '$'
     F2Msg   DB '2) Find the number of occurences of a character', 0dh, 0ah, '$'
     F3Msg   DB '3) Find the length of the string', 0dh, 0ah, '$'
     F4Msg   DB '4) Find the number of alpha numeric characters',0dh, 0ah, '$'
@@ -23,9 +24,13 @@ Include PCMAC.Inc
     F9Msg   DB '9) Input a new String', 0dh, 0ah, '$'
     UndoMsg DB 'U) Undo the last function (only works once)', 0dh, 0ah, '$'
     ExitMsg DB 'E) Exit', 0dh, 0ah, '$'
+    NoCharMatch     DB 'The character select could not be found ', 0dh, 0ah, '$'
+    CharFoundAt     DB '(0 indexed) The character was found at location ', '$'
     InvalidInputMsg DB 'The input entered was not a valid function', 0dh, 0ah, '$'
 
 .Code
+
+    extern PutDec : near
 
     Main Proc
     mov ax, @Data
@@ -162,6 +167,33 @@ ExitProgram:
 
     Function1 Proc
 
+    _PutStr F1InputMsg
+    _GetCh
+    xor ah, ah
+    push ax
+    _PutStr NewLine
+    pop ax
+
+    mov bx, offset CurrentString
+    mov cx, -1
+    dec bx
+    CheckMatchForChar:
+    inc cx
+    inc bx
+    cmp byte ptr [bx], '$'
+    je NoMatch
+    cmp byte ptr [bx], al
+    jne CheckMatchForChar
+    _PutStr CharFoundAt
+    mov ax, cx
+    call PutDec
+    jmp MatchFound
+
+    NoMatch:
+    _PutStr NoCharMatch
+
+    MatchFound:
+    _PutStr NewLine
 
     ret
     Function1 EndP
@@ -207,10 +239,8 @@ ExitProgram:
     Function9 Proc
 
     _PutStr GetNewInputMsg
-
-    mov ah, 0ah
-    mov dx, offset Buffer
-    int 21h
+    _GetStr Buffer
+    _PutStr NewLine
 
     ret
     Function9 EndP
