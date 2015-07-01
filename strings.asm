@@ -7,8 +7,9 @@ Include PCMAC.Inc
     MaxStrLength    equ 51
     Buffer          DB MaxStrLength
                     DB ?
-                    DB 51 dup(?)
+    CurrentString   DB 51 dup('$')
 
+    CurrentStringMsg    DB 'The current string > ', '$'
     GetNewInputMsg  DB 'Please enter a new string of characters > ', '$'
     SelectFMsg      DB 'Please enter a number 1-9 to select a function or 0 to list the functions', 0dh, 0ah, '$'
     F1Msg   DB '1) Find the location of a characters first occurence', 0dh, 0ah, '$'
@@ -22,18 +23,22 @@ Include PCMAC.Inc
     F9Msg   DB '9) Input a new String', 0dh, 0ah, '$'
     UndoMsg DB 'U) Undo the last function (only works once)', 0dh, 0ah, '$'
     ExitMsg DB 'E) Exit', 0dh, 0ah, '$'
-    CurrentString   DB '$'
     InvalidInputMsg DB 'The input entered was not a valid function', 0dh, 0ah, '$'
 
 .Code
 
     Main Proc
-   ; call GetNewInput
+    mov ax, @Data
+    mov ds, ax
+    call Function9 
 
 SelectNewFunction:
 
     _PutStr SelectFMsg
     _GetCh
+    mov bl, al
+    _PutStr NewLine
+    mov al, bl
 
     cmp al, 'e'
     je ExitProgram
@@ -41,6 +46,7 @@ SelectNewFunction:
     je ExitProgram
 
     call RunFunction
+    call PrintString
     jmp SelectNewFunction
 
 ExitProgram: 
@@ -139,10 +145,23 @@ ExitProgram:
 
     Function0 Proc
 
+        _PutStr F1Msg
+        _PutStr F2Msg
+        _PutStr F3Msg
+        _PutStr F4Msg
+        _PutStr F5Msg
+        _PutStr F6Msg
+        _PutStr F7Msg
+        _PutStr F8Msg
+        _PutStr F9Msg
+        _PutStr UndoMsg
+        _PutStr ExitMsg
+
     ret
     Function0 EndP
 
     Function1 Proc
+
 
     ret
     Function1 EndP
@@ -187,6 +206,12 @@ ExitProgram:
 
     Function9 Proc
 
+    _PutStr GetNewInputMsg
+
+    mov ah, 0ah
+    mov dx, offset Buffer
+    int 21h
+
     ret
     Function9 EndP
 
@@ -194,5 +219,15 @@ ExitProgram:
 
     ret
     Undo EndP
+
+    PrintString Proc
+
+    _PutStr CurrentStringMsg
+    _PutStr CurrentString
+    _PutStr NewLine
+
+    ret
+    PrintString EndP
+
 
 End Main
