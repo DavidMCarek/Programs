@@ -383,6 +383,31 @@ ExitProgram:
 
     Function8 Proc
 
+    mov bx, offset CurrentString
+    dec bx
+
+    CheckIfAlpha:
+    inc bx
+    cmp byte ptr [bx], '$'
+    je DoneCheckingAlpha
+
+    cmp byte ptr [bx], 'A'
+    jb CheckIfAlpha
+    cmp byte ptr [bx], 'Z'
+    ja NotCapAorZ 
+    or byte ptr [bx], 00100000B
+    jmp CheckIfAlpha
+
+    NotCapAorZ:
+    cmp byte ptr [bx], 'a'
+    jb CheckIfAlpha
+    cmp byte ptr [bx], 'z'
+    ja CheckIfAlpha
+    and byte ptr [bx], 11011111B
+    jmp CheckIfAlpha
+
+    DoneCheckingAlpha:
+
     ret
     Function8 EndP
 
