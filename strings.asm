@@ -8,10 +8,10 @@ Include PCMAC.Inc
 
     Buffer          DB MaxStrLength
     StringLength    DB ?
-    CurrentString   DB 51 dup('$')
+    CurrentString   DB MaxStrLength dup('$')
 
     PrevStrLength   DB ?
-    PrevString      DB 51 dup('$')
+    PrevString      DB MaxStrLength dup('$')
 
     CurrentStringMsg    DB 'The current string > ', '$'
     GetNewInputMsg  DB 'Please enter a new string of characters > ', '$'
@@ -65,7 +65,7 @@ SelectNewFunction:
 
 ExitProgram: 
 
-    _Exit
+    _Exit   0
     Main EndP 
 
 ;/////////////////////////////////////////////////
@@ -86,28 +86,24 @@ NotF1:
     
     cmp al, '2'
     jne NotF2
-    call StoreString
     call Function2
     jmp FunctionRun
 NotF2:
 
     cmp al, '3'
     jne NotF3
-    call StoreString
     call Function3
     jmp FunctionRun
 NotF3:
 
     cmp al, '4'
     jne NotF4
-    call StoreString
     call Function4
     jmp FunctionRun
 NotF4:
 
     cmp al, '5'
     jne NotF5
-    call StoreString
     call Function5
     jmp FunctionRun
 NotF5:
@@ -426,22 +422,21 @@ DoneCounting:
 
     Function9 Proc
 
-    xor cx, cx
     mov cl, StringLength
     mov bx, offset CurrentString
 
     ClearNextByte:
-    cmp cx, 0
+    cmp cl, 0
     je Cleared
     mov byte ptr [bx], '$'
     inc bx
-    dec cx
+    dec cl
     jmp ClearNextByte
 
     Cleared:
     _PutStr GetNewInputMsg
     _GetStr Buffer
-    _PutStr NewLine
+    _PutCh 0ah
 
     ret
     Function9 EndP
@@ -456,7 +451,8 @@ DoneCounting:
     mov bx, offset CurrentString
     mov si, offset PrevString
 
-    mov cx, 50
+    mov cx, MaxStrLength
+    dec cx
 
     CopyNextByte:
     mov al, byte ptr [si]
@@ -479,7 +475,8 @@ DoneCounting:
     mov bx, offset CurrentString
     mov si, offset PrevString
 
-    mov cx, 50
+    mov cx, MaxStrLength
+    dec cx
 
     CopyByte:
     mov al, byte ptr [bx]
@@ -497,7 +494,8 @@ DoneCounting:
     PrintString Proc
 
     _PutStr CurrentStringMsg
-    _PutStr CurrentString
+    mov bx, offset CurrentString
+    mov 
     _PutStr NewLine
 
     ret
