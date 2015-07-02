@@ -24,6 +24,8 @@ Include PCMAC.Inc
     F9Msg   DB '9) Input a new String', 0dh, 0ah, '$'
     UndoMsg DB 'U) Undo the last function (only works once)', 0dh, 0ah, '$'
     ExitMsg DB 'E) Exit', 0dh, 0ah, '$'
+    ReplaceeChar    DB 'Please enter the character to be replaced > ', '$'
+    ReplacerChar    DB 'Please enter the character to replace the one above > ', '$'
     NmbrOfCharsMsg  DB 'Number of alphanumeric characters > ', '$' 
     FindCharMsg     DB 'Please enter a character to search for > ', '$'
     NoCharMatch     DB 'The character selected could not be found ', 0dh, 0ah, '$'
@@ -60,8 +62,7 @@ SelectNewFunction:
 
 ExitProgram: 
 
-    mov ah, 4ch
-    int 21h
+    _Exit
     Main EndP 
 
     RunFunction Proc
@@ -295,6 +296,31 @@ ExitProgram:
 
     Function5 Proc
 
+    _PutStr ReplaceeChar
+    _GetCh
+    mov bl, al
+    _PutStr NewLine
+
+    _PutStr ReplacerChar
+    _GetCh
+    mov bh, al
+    _PutStr NewLine
+    mov ax, bx
+
+    mov bx, offset CurrentString
+    dec bx
+
+    ReplaceNext:
+    inc bx
+    cmp byte ptr [bx], '$'
+    je DoneReplacing
+
+    cmp byte ptr [bx], al
+    jne ReplaceNext
+    mov byte ptr [bx], ah
+    jmp ReplaceNext
+
+    DoneReplacing:
     ret
     Function5 EndP
 
