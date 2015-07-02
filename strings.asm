@@ -1,5 +1,5 @@
 .Model  small
-.386
+.186
 .Stack  100h
 Include PCMAC.Inc
 .Data
