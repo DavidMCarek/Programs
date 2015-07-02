@@ -65,9 +65,9 @@ ExitProgram:
     _Exit
     Main EndP 
 
+;/////////////////////////////////////////////////
+
     RunFunction Proc
-    pushf
-    push ax
 
     cmp al, '0'
     jne NotF0
@@ -147,11 +147,10 @@ ExitProgram:
 
     FunctionRun:
 
-    pop ax
-    popf
-
     ret
     RunFunction EndP
+
+;/////////////////////////////////////////////////
 
     Function0 Proc
 
@@ -169,6 +168,8 @@ ExitProgram:
 
     ret
     Function0 EndP
+
+;/////////////////////////////////////////////////
 
     Function1 Proc
 
@@ -203,6 +204,8 @@ ExitProgram:
     ret
     Function1 EndP
 
+;/////////////////////////////////////////////////
+
     Function2 Proc
 
     _PutStr FindCharMsg
@@ -232,6 +235,8 @@ ExitProgram:
 
     ret
     Function2 EndP
+
+;/////////////////////////////////////////////////
 
     Function3 Proc
     
@@ -294,6 +299,8 @@ ExitProgram:
     ret
     Function4 EndP
 
+;/////////////////////////////////////////////////
+
     Function5 Proc
 
     _PutStr ReplaceeChar
@@ -324,22 +331,45 @@ ExitProgram:
     ret
     Function5 EndP
 
+;/////////////////////////////////////////////////
 
     Function6 Proc
 
+    mov bx, offset CurrentString
+    dec bx
+
+    CheckIfLower:
+    inc bx
+    cmp byte ptr [bx], '$'
+    je DoneCapping
+
+    cmp byte ptr [bx], 'a'
+    jb CheckIfLower
+    cmp byte ptr [bx], 'z'
+    ja CheckIfLower
+    and byte ptr [bx], 11011111B
+    jmp CheckIfLower
+
+    DoneCapping:
+
     ret
     Function6 EndP
+
+;/////////////////////////////////////////////////
 
     Function7 Proc
 
     ret
     Function7 EndP
 
+;/////////////////////////////////////////////////
+
     Function8 Proc
 
     ret
     Function8 EndP
 
+;/////////////////////////////////////////////////
 
     Function9 Proc
 
@@ -363,10 +393,14 @@ ExitProgram:
     ret
     Function9 EndP
 
+;/////////////////////////////////////////////////
+
     Undo Proc
 
     ret
     Undo EndP
+
+;/////////////////////////////////////////////////
 
     PrintString Proc
 
