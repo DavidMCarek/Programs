@@ -10,6 +10,9 @@ Include PCMAC.Inc
     StringLength    DB ?
     CurrentString   DB 51 dup('$')
 
+    PrevStrLength   DB ?
+    PrevString      DB 51 dup('$')
+
     CurrentStringMsg    DB 'The current string > ', '$'
     GetNewInputMsg  DB 'Please enter a new string of characters > ', '$'
     SelectFMsg      DB 'Please enter a number 1-9 to select a function or 0 to list the functions', 0dh, 0ah, '$'
@@ -22,7 +25,7 @@ Include PCMAC.Inc
     F7Msg   DB '7) Lowercase all letter in the string', 0dh, 0ah, '$'
     F8Msg   DB '8) Toggle the case of all letters', 0dh, 0ah, '$'
     F9Msg   DB '9) Input a new String', 0dh, 0ah, '$'
-    UndoMsg DB 'U) Undo the last function (only works once)', 0dh, 0ah, '$'
+    UndoMsg DB 'U) Undo the last function (cannot undo more than 1 function)', 0dh, 0ah, '$'
     ExitMsg DB 'E) Exit', 0dh, 0ah, '$'
     ReplaceeChar    DB 'Please enter the character to be replaced > ', '$'
     ReplacerChar    DB 'Please enter the character to replace the one above > ', '$'
@@ -73,79 +76,87 @@ ExitProgram:
     jne NotF0
     call Function0
     jmp FunctionRun
-    NotF0:
+NotF0:
 
     cmp al, '1'
     jne NotF1
     call Function1
     jmp FunctionRun
-    NotF1:
+NotF1:
     
     cmp al, '2'
     jne NotF2
+    call StoreString
     call Function2
     jmp FunctionRun
-    NotF2:
+NotF2:
 
     cmp al, '3'
     jne NotF3
+    call StoreString
     call Function3
     jmp FunctionRun
-    NotF3:
+NotF3:
 
     cmp al, '4'
     jne NotF4
+    call StoreString
     call Function4
     jmp FunctionRun
-    NotF4:
+NotF4:
 
     cmp al, '5'
     jne NotF5
+    call StoreString
     call Function5
     jmp FunctionRun
-    NotF5:
+NotF5:
 
     cmp al, '6'
     jne NotF6
+    call StoreString
     call Function6
     jmp FunctionRun
-    NotF6:
+NotF6:
 
     cmp al, '7'
     jne NotF7
+    call StoreString
     call Function7
     jmp FunctionRun
-    NotF7:
+NotF7:
 
     cmp al, '8'
     jne NotF8
+    call StoreString
     call Function8
     jmp FunctionRun
-    NotF8:
+NotF8:
 
     cmp al, '9'
     jne NotF9
+    call StoreString
     call Function9
     jmp FunctionRun
-    NotF9:
+NotF9:
 
     cmp al, 'u'
     jne NotLowU
     call Undo
     jmp FunctionRun
-    NotLowU:
+NotLowU:
 
     cmp al, 'U'
     jne NotCapU
     call Undo
     jmp FunctionRun
-    NotCapU:
+NotCapU:
 
     mov dx, offset InvalidInputMsg
     mov ah, 09h
     int 21h
 
-    FunctionRun:
+FunctionRun:
 
     ret
     RunFunction EndP
@@ -154,17 +165,17 @@ ExitProgram:
 
     Function0 Proc
 
-        _PutStr F1Msg
-        _PutStr F2Msg
-        _PutStr F3Msg
-        _PutStr F4Msg
-        _PutStr F5Msg
-        _PutStr F6Msg
-        _PutStr F7Msg
-        _PutStr F8Msg
-        _PutStr F9Msg
-        _PutStr UndoMsg
-        _PutStr ExitMsg
+    _PutStr F1Msg
+    _PutStr F2Msg
+    _PutStr F3Msg
+    _PutStr F4Msg
+    _PutStr F5Msg
+    _PutStr F6Msg
+    _PutStr F7Msg
+    _PutStr F8Msg
+    _PutStr F9Msg
+    _PutStr UndoMsg
+    _PutStr ExitMsg
 
     ret
     Function0 EndP
@@ -183,7 +194,7 @@ ExitProgram:
     mov cx, -1
     dec bx
 
-    CheckMatchForChar:
+CheckMatchForChar:
     inc cx
     inc bx
     cmp byte ptr [bx], '$'
@@ -195,10 +206,10 @@ ExitProgram:
     call PutDec
     jmp MatchFound
 
-    NoMatch:
+NoMatch:
     _PutStr NoCharMatch
 
-    MatchFound:
+MatchFound:
     _PutStr NewLine
 
     ret
@@ -218,7 +229,7 @@ ExitProgram:
     mov bx, offset CurrentString
     dec bx
 
-    CheckChar:
+CheckChar:
     inc bx
     cmp byte ptr [bx], '$'
     je DoneCounting
@@ -227,7 +238,7 @@ ExitProgram:
     inc cx
     jmp CheckChar
 
-    DoneCounting:
+DoneCounting:
     _PutStr CharOccurences
     mov ax, cx
     call putDec 
@@ -239,7 +250,7 @@ ExitProgram:
 ;/////////////////////////////////////////////////
 
     Function3 Proc
-    
+
     _PutStr LengthMsg
     xor ah, ah
     mov al, StringLength
@@ -439,8 +450,47 @@ ExitProgram:
 
     Undo Proc
 
+    mov dl, PrevStrLength
+    mov StringLength, dl
+    
+    mov bx, offset CurrentString
+    mov si, offset PrevString
+
+    mov cx, 50
+
+    CopyNextByte:
+    mov al, byte ptr [si]
+    mov byte ptr [bx], al 
+    inc bx
+    inc si
+    dec cx
+    jnz CopyNextByte
+
     ret
     Undo EndP
+
+;/////////////////////////////////////////////////
+
+    StoreString Proc
+
+    mov dl, StringLength
+    mov PrevStrLength, dl
+    
+    mov bx, offset CurrentString
+    mov si, offset PrevString
+
+    mov cx, 50
+
+    CopyByte:
+    mov al, byte ptr [bx]
+    mov byte ptr [si], al 
+    inc bx
+    inc si
+    dec cx
+    jnz CopyByte
+
+    ret
+    StoreString EndP
 
 ;/////////////////////////////////////////////////
 
