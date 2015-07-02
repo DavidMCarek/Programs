@@ -9,7 +9,7 @@ Include PCMAC.Inc
     Buffer          DB MaxStrLength
     StringLength    DB ?
     CurrentString   DB MaxStrLength dup('$')
-
+                    DB '$'
     PrevStrLength   DB ?
     PrevString      DB MaxStrLength dup('$')
 
@@ -452,7 +452,6 @@ DoneCounting:
     mov si, offset PrevString
 
     mov cx, MaxStrLength
-    dec cx
 
     CopyNextByte:
     mov al, byte ptr [si]
@@ -476,7 +475,6 @@ DoneCounting:
     mov si, offset PrevString
 
     mov cx, MaxStrLength
-    dec cx
 
     CopyByte:
     mov al, byte ptr [bx]
@@ -494,8 +492,7 @@ DoneCounting:
     PrintString Proc
 
     _PutStr CurrentStringMsg
-    mov bx, offset CurrentString
-    mov 
+    _PutStr CurrentString
     _PutStr NewLine
 
     ret
