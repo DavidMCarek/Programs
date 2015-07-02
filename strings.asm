@@ -359,6 +359,23 @@ ExitProgram:
 
     Function7 Proc
 
+    mov bx, offset CurrentString
+    dec bx
+
+    CheckIfUpper:
+    inc bx
+    cmp byte ptr [bx], '$'
+    je DoneLowering
+
+    cmp byte ptr [bx], 'A'
+    jb CheckIfUpper
+    cmp byte ptr [bx], 'Z'
+    ja CheckIfUpper
+    or byte ptr [bx], 00100000B
+    jmp CheckIfUpper
+
+    DoneLowering:
+
     ret
     Function7 EndP
 
