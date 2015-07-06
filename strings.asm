@@ -3,39 +3,37 @@
 .Stack  100h
 Include PCMAC.Inc
 .Data
-    NewLine         DB 0dh, 0ah, '$'
-    MaxStrLength    equ 51
-
-    Buffer          DB MaxStrLength
-    StringLength    DB ?
-    CurrentString   DB MaxStrLength dup('$')
-                    DB '$'
-    PrevStrLength   DB ?
-    PrevString      DB MaxStrLength dup('$')
-
+    MaxStrLength        equ 51
+    NewLine             DB 0dh, 0ah, '$'
+    Buffer              DB MaxStrLength
+    StringLength        DB ?
+    CurrentString       DB MaxStrLength dup('$')
+                        DB '$'
+    PrevStrLength       DB ?
+    PrevString          DB MaxStrLength dup('$')
     CurrentStringMsg    DB 'The current string > ', '$'
-    GetNewInputMsg  DB 'Please enter a new string of characters > ', '$'
-    SelectFMsg      DB 'Please enter a number 1-9 to select a function or 0 to list the functions', 0dh, 0ah, '$'
-    F1Msg   DB '1) Find the location of a characters first occurence', 0dh, 0ah, '$'
-    F2Msg   DB '2) Find the number of occurences of a character', 0dh, 0ah, '$'
-    F3Msg   DB '3) Find the length of the string', 0dh, 0ah, '$'
-    F4Msg   DB '4) Find the number of alphanumeric characters',0dh, 0ah, '$'
-    F5Msg   DB '5) Replace every occurence of a letter with a different one', 0dh, 0ah, '$'
-    F6Msg   DB '6) Capitalize all letters in the string', 0dh, 0ah, '$'
-    F7Msg   DB '7) Lowercase all letter in the string', 0dh, 0ah, '$'
-    F8Msg   DB '8) Toggle the case of all letters', 0dh, 0ah, '$'
-    F9Msg   DB '9) Input a new String', 0dh, 0ah, '$'
-    UndoMsg DB 'U) Undo the last function (cannot undo more than 1 function)', 0dh, 0ah, '$'
-    ExitMsg DB 'E) Exit', 0dh, 0ah, '$'
-    ReplaceeChar    DB 'Please enter the character to be replaced > ', '$'
-    ReplacerChar    DB 'Please enter the character to replace the one above > ', '$'
-    NmbrOfCharsMsg  DB 'Number of alphanumeric characters > ', '$' 
-    FindCharMsg     DB 'Please enter a character to search for > ', '$'
-    NoCharMatch     DB 'The character selected could not be found ', 0dh, 0ah, '$'
-    CharFoundAt     DB 'Character location (0 indexed) > ', '$'
-    CharOccurences  DB 'Character occurences > ', '$'
-    LengthMsg       DB 'String length > ', '$'
-    InvalidInputMsg DB 'The input entered was not a valid function', 0dh, 0ah, '$'
+    GetNewInputMsg      DB 'Please enter a new string of characters > ', '$'
+    SelectFMsg          DB 'Please enter a number 1-9 to select a function or 0 to list the functions', 0dh, 0ah, '$'
+    F1Msg               DB '1) Find the location of a characters first occurence', 0dh, 0ah, '$'
+    F2Msg               DB '2) Find the number of occurences of a character', 0dh, 0ah, '$'
+    F3Msg               DB '3) Find the length of the string', 0dh, 0ah, '$'
+    F4Msg               DB '4) Find the number of alphanumeric characters',0dh, 0ah, '$'
+    F5Msg               DB '5) Replace every occurence of a letter with a different one', 0dh, 0ah, '$'
+    F6Msg               DB '6) Capitalize all letters in the string', 0dh, 0ah, '$'
+    F7Msg               DB '7) Lowercase all letter in the string', 0dh, 0ah, '$'
+    F8Msg               DB '8) Toggle the case of all letters', 0dh, 0ah, '$'
+    F9Msg               DB '9) Input a new String', 0dh, 0ah, '$'
+    UndoMsg             DB 'U) Undo the last function (cannot undo more than 1 function)', 0dh, 0ah, '$'
+    ExitMsg             DB 'E) Exit', 0dh, 0ah, '$'
+    ReplaceeChar        DB 'Please enter the character to be replaced > ', '$'
+    ReplacerChar        DB 'Please enter the character to replace the one above > ', '$'
+    NmbrOfCharsMsg      DB 'Number of alphanumeric characters > ', '$' 
+    FindCharMsg         DB 'Please enter a character to search for > ', '$'
+    NoCharMatch         DB 'The character selected could not be found ', 0dh, 0ah, '$'
+    CharFoundAt         DB 'Character location (0 indexed) > ', '$'
+    CharOccurences      DB 'Character occurences > ', '$'
+    LengthMsg           DB 'String length > ', '$'
+    InvalidInputMsg     DB 'The input entered was not a valid function', 0dh, 0ah, '$'
 
 .Code
 
@@ -104,6 +102,7 @@ NotF4:
 
     cmp al, '5'
     jne NotF5
+    call StoreString
     call Function5
     jmp FunctionRun
 NotF5:
@@ -497,6 +496,5 @@ DoneCounting:
 
     ret
     PrintString EndP
-
 
 End Main
