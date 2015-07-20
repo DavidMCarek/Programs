@@ -98,10 +98,9 @@ Include PCMAC.Inc
         je NegNotNeeded
 
         cmp al, '-'
-        jne NotNegative
+        jne NegNotNeeded
         mov si, 01h
         jmp GetNextCharacter
-    NotNegative:
 
     NegNotNeeded:
         cmp si, 'S'
@@ -148,7 +147,7 @@ Include PCMAC.Inc
 
     NotCapH:
         cmp al, 'h'
-        jne NotNegative
+        jne NoSpecialCharacters
         mov bl, 16
         jmp GetNextCharacter
 
