@@ -415,8 +415,31 @@ Include PCMAC.Inc
         neg ax
 
     OutputIsPositive:
+        push ax
+        push dx
+        mov dx, ax
+        add dx, '0'
+        _PutCh
+        pop dx
+        pop ax
+
+        push ax
+        push dx
+        mov dx, cx
+        add dx, 37h
+        _PutCh
+        pop dx
+        pop ax
+
         xor dx, dx
         div cx
+
+        push ax
+        push dx
+        mov dx, ax
+        _PutCh
+        pop dx
+        pop ax
 
         push ax
         push dx
