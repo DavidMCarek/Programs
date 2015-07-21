@@ -23,7 +23,7 @@ Include PCMAC.Inc
     Base                    DB  ' Base ', '$'
     Comma                   DB  ', ', '$'
     Quotient                DB  ' Quotient, ', '$'
-    Remainder               DB  ' Remainder ', '$'
+    Remainder               DB  ' Remainder', '$'
     StackCounter            DW  0
     
 .Code
@@ -108,6 +108,7 @@ Include PCMAC.Inc
 
     GetNextCharacter:
         _GetCh  noEcho
+        xor ah, ah
 
         cmp al, 8
         jne NotBackSpace
@@ -278,7 +279,7 @@ Include PCMAC.Inc
 ;/////////////////////////////////////////////////////////
 
     DoTheMath   Proc
-    
+
         ;Addition
         _PutStr Addition
         mov ax, InputA
@@ -403,6 +404,7 @@ Include PCMAC.Inc
         ;cx has output radix
         ;ax has value to print
         push bx
+        push cx
         push dx
         push si
         pushf
@@ -415,37 +417,9 @@ Include PCMAC.Inc
         neg ax
 
     OutputIsPositive:
-        push ax
-        push dx
-        mov dx, ax
-        add dx, '0'
-        _PutCh
-        pop dx
-        pop ax
-
-        push ax
-        push dx
-        mov dx, cx
-        add dx, 37h
-        _PutCh
-        pop dx
-        pop ax
-
+    ;look for this line
         xor dx, dx
         div cx
-
-        push ax
-        push dx
-        mov dx, ax
-        _PutCh
-        pop dx
-        pop ax
-
-        push ax
-        push dx
-        _PutCh
-        pop dx
-        pop ax
 
         push dx
         inc StackCounter
@@ -483,6 +457,7 @@ Include PCMAC.Inc
         popf
         pop si 
         pop dx
+        pop cx
         pop bx
 
         ret
