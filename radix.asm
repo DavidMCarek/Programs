@@ -124,13 +124,11 @@ Include PCMAC.Inc
         dec BackSpaceCounter
 
     SkipErase:
-        cmp bx, 0
-        jne DontCheckS
-        cmp si, 'S'
-        je DontCheckS
+        cmp BackSpaceCounter, 0
+        jne DontClearS
         xor si, si
 
-    DontCheckS:
+    DontClearS:
         mov ax, bx
         xor dx, dx
         div cx
@@ -145,6 +143,9 @@ Include PCMAC.Inc
         cmp al, '-'
         jne NegNotNeeded
         mov si, 01h
+        mov dl, '-'
+        _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NegNotNeeded:
@@ -156,6 +157,7 @@ Include PCMAC.Inc
         mov bl, 2
         mov dl, al
         _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NotCapB:
@@ -164,6 +166,7 @@ Include PCMAC.Inc
         mov bl, 2
         mov dl, al
         _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NotLowB:
@@ -172,6 +175,7 @@ Include PCMAC.Inc
         mov bl, 8
         mov dl, al
         _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NotCapO:
@@ -180,6 +184,7 @@ Include PCMAC.Inc
         mov bl, 8
         mov dl, al
         _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NotLowO:
@@ -188,6 +193,7 @@ Include PCMAC.Inc
         mov bl, 10
         mov dl, al
         _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NotCapD:
@@ -196,6 +202,7 @@ Include PCMAC.Inc
         mov bl, 10
         mov dl, al
         _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NotLowD:
@@ -204,6 +211,7 @@ Include PCMAC.Inc
         mov bl, 16
         mov dl, al
         _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NotCapH:
@@ -212,6 +220,7 @@ Include PCMAC.Inc
         mov bl, 16
         mov dl, al
         _PutCh
+        inc BackSpaceCounter
         jmp GetNextCharacter
 
     NoSpecialCharacters:
