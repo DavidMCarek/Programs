@@ -379,6 +379,10 @@ Include PCMAC.Inc
         mov ax, InputA
         mov bx, InputA
         mov cx, InputB
+        cmp cx, 0
+        jge PositivePower
+        neg cx
+    PositivePower:
         xor dx, dx
 
     PowerLoop:
